@@ -1,15 +1,15 @@
 [Unit]
 Description=MPD.FM
-After=mpd.service
+After=mpd.service mongodb.service
 
 [Service]
-ExecStart=/usr/bin/node /home/srv-mpd-fm/MPD.FM/bin/www
+ExecStart=/usr/bin/node /usr/local/sbin/MPD.FM/bin/www
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mpd-fm
-User=srv-mpd-fm
-Group=srv-mpd-fm
+#User=srv-mpd-fm
+#Group=srv-mpd-fm
 
 Environment=NODE_ENV=production
 
@@ -21,7 +21,7 @@ Environment=MPD_HOST=localhost
 Environment=MPD_PORT=6600
 
 # Port to serve HTTP (the user needs special permission to serve on 80; default: 4200)
-Environment=PORT=4200
+Environment=PORT=80
 
 # JSON file with radio stations. If empty [app root]/data/stations.json will be used
 Environment=STATION_FILE=
