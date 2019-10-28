@@ -5,8 +5,11 @@ var path = require('path');
 var mpdClient = require("./mpdclient.js");
 var debug = require('debug')('mpd.fm:wss');
 const WebSocket = require('ws');
+const mongoHost = process.env.MONGO_HOST || 'localhost';
+const mongoPort = process.env.MONGO_PORT || 27017;
+
 const mongo = require('mongodb').MongoClient
-let url = 'mongodb://@localhost:27017/radio?socketTimeoutMS=90000';
+let url = 'mongodb://@'+mongoHost+':'+mongoPort+'/radio?socketTimeoutMS=90000';
 const collectionName = 'stations'
 
 function sendWSSMessage(client, type, data, showDebug = true) {
@@ -63,7 +66,6 @@ module.exports = {
                                 console.error('Can\'t connect to database: "' + err);
                                 return
                             }
-                            console.error(client);
                             const collection = client.collection(collectionName)
 
                             collection.find().toArray((error, items) => {
@@ -71,7 +73,6 @@ module.exports = {
                                     console.error('Can\'t find stations from collection: "' + error);
                                     return
                                 }
-                                console.log(items)
                                 sendWSSMessage(ws, 'STATION_LIST', items);
                             })
                         })
@@ -107,7 +108,6 @@ module.exports = {
 
                                 collection.insertOne(msg.data.station, (err, result) => {
                                     if(err) throw err;
-                                    console.log(result);
                                     sendWSSMessage(ws, 'ADDED');
                                 })
                             })
@@ -115,15 +115,11 @@ module.exports = {
                         break;
                     case "PLAY":
                         if (msg.data && msg.data.stream) {
-
-                            console.log(msg.data.stream);
-
                             mongo.connect(url, (err, client) => {
                                 if (err) {
                                     console.error('Can\'t connect to database: "' + err);
                                     return
                                 }
-                                console.error(client);
                                 const collection = client.collection(collectionName)
                                 let dataFalse = { $set : {playing : false }}
 
@@ -138,7 +134,6 @@ module.exports = {
                                 collection.updateMany(query, dataTrue, (err, collection) => {
                                     if(err) throw err;
                                     console.log(collection.result.nModified + " Record(s) updated successfully");
-                                    console.log(collection);
                                     mpdClient.playStation(msg.data.stream, function (err) {
                                         if (err) {
                                             sendWSSMessage(ws, 'MPD_OFFLINE');

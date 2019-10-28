@@ -8,8 +8,6 @@ Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mpd-fm
-#User=srv-mpd-fm
-#Group=srv-mpd-fm
 
 Environment=NODE_ENV=production
 
@@ -19,6 +17,10 @@ Environment=NODE_ENV=production
 # Details of MPD server (Default: localhost:6600)
 Environment=MPD_HOST=localhost
 Environment=MPD_PORT=6600
+
+# Details of mongodb server (Default: localhost:27017)
+Environment=MONGO_HOST=localhost
+Environment=MONGO_PORT=27017
 
 # Port to serve HTTP (the user needs special permission to serve on 80; default: 4200)
 Environment=PORT=80
