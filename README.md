@@ -19,6 +19,8 @@ MPD.fm has been tested on [Raspbian](https://www.raspberrypi.org/downloads/raspb
 ### Raspbian
 Do the following as **root**:
 ```
+# Install mongodb
+
 # Install Node.js if not yet done
 # E.g., by following Richard Stanley's script: https://github.com/audstanley/NodeJs-Raspberry-Pi
 wget -O - https://raw.githubusercontent.com/audstanley/NodeJs-Raspberry-Pi/master/Install-Node.sh | bash;
@@ -31,29 +33,20 @@ apt-get install mpd
 # Install Git if not yet done
 apt-get install git
 
-# Create a user to have the server not as root
-useradd -mrU srv-mpd-fm
-
-# Sign into the new user
-su srv-mpd-fm
-cd /home/srv-mpd-fm
-
 # Download MPD.fm using Git
-git clone https://github.com/florianheinemann/MPD.FM.git
+git clone https://github.com/ohansrud/MPD.FM.git
 
 # Install dependencies
 cd MPD.FM
 npm install
 
-# Back to root
-exit
-
-# Copy systemd service file
-cp /home/srv-mpd-fm/MPD.FM/service/MPD.FM.service /etc/systemd/system/
+# Install systemd service file
+sudo sh Install.sh
 
 # Ensure MPD.FM starts with boot and run
-systemctl enable MPD.FM
-systemctl start MPD.FM
+sudo systemctl reload-daemon
+sudo systemctl enable MPD.FM
+sudo systemctl start MPD.FM
 
 # Check status
 systemctl status MPD.FM
@@ -61,10 +54,6 @@ systemctl status MPD.FM
 
 To update MPD.FM just do the following as root:
 ```
-# Sign into the dedicated user
-su srv-mpd-fm
-cd /home/srv-mpd-fm/MPD.FM
-
 # Update
 git pull
 npm install
@@ -103,7 +92,7 @@ Environment=STATION_FILE=
 ```
 
 ### Station list
-`stations.json` provides MPD.FM with all the radio stations that should be shown to the users. Each station is stored as follows:
+mongodb provides MPD.FM with all the radio stations that should be shown to the users. Each station is stored as follows:
 ```
 {   "id": 1, 
     "station": "Berlin Community Radio",
