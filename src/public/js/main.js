@@ -21,6 +21,8 @@ Vue.component('radio-station', {
 var app = new Vue({
     el: '#app',
     data: {
+        showForm: false,
+        station: {name: '', stream: '', description: '', logo: ''},
         stationList: [ ],
         status: 'loading', // playing, stopped, paused
         elapsed: '0:00',
@@ -37,6 +39,10 @@ var app = new Vue({
         this.updateElapsed();
     },
     methods: {
+        showStationForm: function() {
+            var self = this;
+            self.showForm = !self.showForm;
+        },
         connectWSS: function() {
             var self = this;
 
@@ -65,6 +71,11 @@ var app = new Vue({
                         self.setCurrentStation(msg.data.file);
                         self.setSongName(msg.data.title, msg.data.album, msg.data.artist);
                         self.setElapsedTime(msg.data.elapsed);
+                        break;
+                    case "ADDED":
+                        self.station = {name: '', stream: '', description: '', logo: ''};
+                        self.showForm = false;
+                        self.sendWSSMessage('REQUEST_STATION_LIST', null);
                         break;
                     case "ELAPSED":
                         self.setElapsedTime(msg.data.elapsed);
@@ -118,6 +129,11 @@ var app = new Vue({
             self.elapsed = '0:00';
             self.song = "";
             self.sendWSSMessage('PLAY', { stream: stream });
+        },
+        
+        addStation: function(station) {
+            var self = this;
+            self.sendWSSMessage('ADD', { station: station });
         },
 
         updateElapsed: function() {

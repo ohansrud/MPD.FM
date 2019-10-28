@@ -107,6 +107,17 @@ function sendPlayStation(stream, callback) {
     });
 }
 
+function sendAddStation(station, callback) {
+    sendCommands([cmd("add", [station])], 
+        function(err, msg) {
+            if (err) {
+                callback(err);
+            } else {
+                callback();
+            }
+    });
+}
+
 function sendElapsedRequest(callback) {
     sendCommands(cmd("status", []), 
         function(err, msg) {
@@ -165,6 +176,10 @@ var self = module.exports = {
 
     play: function play(callback) {
         sendPlay(true, callback);
+    },
+
+    addStation: function addStation(station, callback) {
+        sendAddStation(station, callback);
     },
 
     pause: function pause(callback) {

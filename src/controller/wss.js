@@ -96,7 +96,23 @@ module.exports = {
                             }
                         });
                         break;
+                    case "ADD":
+                        if (msg.data && msg.data.station) {
+                            mongo.connect(url, (err, client) => {
+                                if (err) {
+                                    console.error('Can\'t connect to database: "' + err);
+                                    return
+                                }
+                                const collection = client.collection(collectionName)
 
+                                collection.insertOne(msg.data.station, (err, result) => {
+                                    if(err) throw err;
+                                    console.log(result);
+                                    sendWSSMessage(ws, 'ADDED');
+                                })
+                            })
+                        } 
+                        break;
                     case "PLAY":
                         if (msg.data && msg.data.stream) {
 
